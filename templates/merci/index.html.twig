@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/index.css') }}">
+{% endblock %}
+{% block title %}Mes Mercis{% endblock %}
+
+{% block body %}
+<h1>Mes Mercis</h1>
+
+<div id="filter-container">
+    <button class="filter-btn" data-filter="all">Tous</button>
+    <button class="filter-btn" data-filter="sent">Envoyés</button>
+    <button class="filter-btn" data-filter="received">Reçus</button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>De</th>
+            <th>À</th>
+            <th>Message</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="merci-list">
+        {% for entry in mercis %}
+            <tr class="merci-item" data-type="{{ entry.type }}">
+                <td>{{ entry.merci.id }}</td>
+                <td>
+                    {% if entry.type == 'received' %}
+                        <img src="{{ app.request.schemeAndHttpHost ~ employees[entry.merci.fromEmployee] }}" alt="{{ entry.merci.fromEmployee }}" width="40" height="40">
+                        {{ entry.merci.fromEmployee }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if entry.type == 'sent' %}
+                        <img src="{{ app.request.schemeAndHttpHost ~ employees[entry.merci.toEmployee] }}" alt="{{ entry.merci.toEmployee }}" width="40" height="40">
+                        {{ entry.merci.toEmployee }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ entry.merci.message }}</td>
+                <td>{{ entry.merci.date ? entry.merci.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_merci_show', {'id': entry.merci.id}) }}">show</a>
+                    <a href="{{ path('app_merci_edit', {'id': entry.merci.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">Aucun merci trouvé.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{{ path('app_merci_new') }}">Create new</a>
+
+<script>
+    function initFilters() {
+        const buttons = document.querySelectorAll('.filter-btn');
+        const merciItems = document.querySelectorAll('.merci-item');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.getAttribute('data-filter');
+
+                merciItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initFilters);
+
+    if (typeof Turbo !== 'undefined') {
+        document.addEventListener('turbo:load', initFilters);
+    }
+</script>
+{% endblock %}

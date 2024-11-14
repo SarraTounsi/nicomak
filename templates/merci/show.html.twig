@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Merci{% endblock %}
+
+{% block body %}
+    <h1>Merci</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ merci.id }}</td>
+            </tr>
+            <tr>
+                <th>FromEmployee</th>
+                <td>{{ merci.fromEmployee }}</td>
+            </tr>
+            <tr>
+                <th>ToEmployee</th>
+                <td>{{ merci.toEmployee }}</td>
+            </tr>
+            <tr>
+                <th>Message</th>
+                <td>{{ merci.message }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ merci.date ? merci.date|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_merci_index') }}">back to list</a>
+
+    <a href="{{ path('app_merci_edit', {'id': merci.id}) }}">edit</a>
+
+    {{ include('merci/_delete_form.html.twig') }}
+{% endblock %}
